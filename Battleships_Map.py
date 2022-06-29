@@ -1,4 +1,6 @@
 # TODO : Set opp en dobbel array med 1-8 og A-H. En annen array som inneholder bom fra motspiller
+import copy
+
 from Tile import Tile
 import array
 
@@ -11,15 +13,22 @@ def battleships_Map_Setup():
     Tiles_in_Map = [[0 for i in range(dim1)] for j in range(dim2)]
     for x in range(dim1):
         for y in range(dim2):
-            Tiles_in_Map[x][y] = Tile(x+1, determine_Letter(y))
-    #for x in range(dim1):
+            Tiles_in_Map[x][y] = Tile(x + 1, determine_Letter(y))
+    # for x in range(dim1):
     #    for y in range(dim2):
     #      print(str(Tiles_in_Map[x][y].get_x_pos()) + str(Tiles_in_Map[x][y].get_y_pos()))
-    setup_Ships(0)
+
     setup_Ships(1)
     setup_Ships(2)
+    setup_Ships(3)
+
 
 def setup_Ships(length):
+    list_put_ship = compute_position()
+    possible_directions = compute_position_based_on_length(length, list_put_ship)
+
+
+def compute_position():
     put_ship = input()
     put_ship = put_ship.upper()
     put_ship = put_ship.replace(" ", "")
@@ -33,14 +42,48 @@ def setup_Ships(length):
     list_put_ship = list(put_ship)
     list_put_ship[0] = int(list_put_ship[0])
     list_put_ship[1] = determine_Number(list_put_ship[1])
-    print(list_put_ship)
-    possible_directions = check_Distances(length, list_put_ship)
+    return list_put_ship
 
 
-def check_Distances(length, list_put_ship):
-    east_position = Tiles_in_Map[list_put_ship[0]+length][list_put_ship[1]]
-    print(east_position.x_position)
-    print(east_position.y_position)
+def compute_east(length, east_position):
+    east_position[0] = east_position[0] + length
+    return east_position
+
+
+def compute_west(length, west_position):
+    west_position[0] = west_position[0] - length
+    return west_position
+
+
+def compute_north(length, north_position):
+    north_position[1] = north_position[1] + length
+    return north_position
+
+
+def compute_south(length, south_position):
+    south_position[1] = south_position[1] - length
+    return south_position
+
+
+def remove_illegal_placements(possible_directions):
+    nr_to_remove = []
+    for x in range(len(possible_directions)):
+        if possible_directions[x][0] <= 0 or possible_directions[x][1] <= 0:
+            nr_to_remove.append(copy.deepcopy(possible_directions[x]))
+
+    for y in range(len(nr_to_remove)):
+        print(nr_to_remove[y])
+
+
+def compute_position_based_on_length(length, list_put_ship):
+    possible_directions = [compute_east(length, copy.deepcopy(list_put_ship)),
+                           compute_west(length, copy.deepcopy(list_put_ship)),
+                           compute_north(length, copy.deepcopy(list_put_ship)),
+                           compute_south(length, copy.deepcopy(list_put_ship))]
+    remove_illegal_placements(possible_directions)
+    print(possible_directions)
+    return possible_directions
+
 
 def determine_Letter(number_letter):
     if number_letter == 0:
