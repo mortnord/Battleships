@@ -47,6 +47,7 @@ def compute_position():
 
 def compute_east(length, east_position):
     east_position[0] = east_position[0] + length
+    find_tile(east_position)
     return east_position
 
 
@@ -64,15 +65,21 @@ def compute_south(length, south_position):
     south_position[1] = south_position[1] - length
     return south_position
 
+def find_tile(position):
+    target_tile = 0
+    for wanted_tile in Tiles_in_Map:
+        if wanted_tile.x_position == position[0] and wanted_tile.y_position == position[1]:
+            target_tile = wanted_tile
+            print(target_tile)
+    return target_tile
 
 def remove_illegal_placements(possible_directions):
     nr_to_remove = []
     for x in range(len(possible_directions)):
         if possible_directions[x][0] <= 0 or possible_directions[x][1] <= 0:
-            nr_to_remove.append(copy.deepcopy(possible_directions[x]))
+            possible_directions[x][0] = 0
+            possible_directions[x][1] = 0
 
-    for y in range(len(nr_to_remove)):
-        print(nr_to_remove[y])
 
 
 def compute_position_based_on_length(length, list_put_ship):
@@ -81,7 +88,7 @@ def compute_position_based_on_length(length, list_put_ship):
                            compute_north(length, copy.deepcopy(list_put_ship)),
                            compute_south(length, copy.deepcopy(list_put_ship))]
     remove_illegal_placements(possible_directions)
-    print(possible_directions)
+
     return possible_directions
 
 
